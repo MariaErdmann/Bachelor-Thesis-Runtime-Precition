@@ -23,10 +23,12 @@ Modelling and prediction of runtime behaviour of machine learning algorithms wit
 
 
 4. Depending on what we decide on
+
   a) BatchExperiments_Runtime_test3.R
     uses BatchExperiments as basis
     Advantages: nice output (exactly the table I want to have)
     Disadvantage: each algorithm needs to be run on each task seperately, which means having 500 classification tasks and ? (number of classification algos to be analysed) classification algorithms 500 * ? for classification and 200 * ? (number of regression algos to be analysed)
+  
   b) Create_Learner_List_For_One_Task.R
     uses batchtools as basis
     Advantages: when param.set shall be dependend on the task, all algorithms could be run on one task at once --> 500 experiments for classification and 200 experiments for regression. If param.set shall not be dependend on the task, only one experiment for classification and one for regression needed
