@@ -23,13 +23,6 @@ regression.dids = didsForOMLDataSets(t.type)
 data.did = regression.dids[92]
 boston.task = getTaskForHPS(data.did = data.did, t.type = t.type)
 
-
-#data.did = regression.dids[8]
-#fruitfly.task = getTaskForHPS(data.did = data.did, t.type = t.type)
-#fruitfly.task = fruitfly.task$mlr.task
-
-#tasks = list(boston.task) 
-
 #for (i in seq_along(tasks)) {
 #  tk = tasks[[i]]
 tk = boston.task
@@ -84,20 +77,6 @@ des = cbind(des, replace)
 boston.algo.design = makeDesign("regr.randomForest", design = des)
 
 
-
-
-# maxFeatures = sum(fruitfly.task$task.desc$n.feat)
-# maxObs = fruitfly.task$task.desc$size
-# 
-# ps = makeParamSet(
-#   makeIntegerParam("ntree", lower = 1, upper = 100),
-#   makeIntegerParam("mtry", lower = 1, upper = maxFeatures),
-#   makeIntegerParam("sampsize", lower = 1, upper = maxObs),
-#   makeIntegerParam("nodesize", lower = 1, upper = maxObs)
-# )
-# 
-# des = generateRandomDesign(50, par.set = ps)
-# fruitfly.design = makeDesign("regr.randomForest", design = des)
 ratio = c(0.67)
 pars = list(ratio = ratio)
 task.design = makeDesign(getTaskId(tk), exhaustive = pars)
