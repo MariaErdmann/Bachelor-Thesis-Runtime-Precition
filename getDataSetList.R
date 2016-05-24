@@ -1,5 +1,5 @@
 # Produces an overview about the datasets used for analysis
-source("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit\\didsForOMLDataSets.R")
+source("didsForOMLDataSets.R")
 regression.dids = didsForOMLDataSets(t.type = "Supervised Regression")
 classification.dids = didsForOMLDataSets(t.type = "Supervised Classification")
 
