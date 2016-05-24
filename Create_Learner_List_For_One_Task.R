@@ -1,5 +1,5 @@
 # Source programs to get tasks
-setwd("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit")
+#setwd("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit")
 
 
 if(!exists("didsForOMLDataSets", mode="function")) source("didsForOMLDataSets.R")
