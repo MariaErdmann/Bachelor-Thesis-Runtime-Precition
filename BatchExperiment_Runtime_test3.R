@@ -1,9 +1,9 @@
 # Set working directory
-setwd("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit")
+#setwd("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit")
 
 
 # delete Files/Directories
-unlink("runtime_prediction_test1-files", recursive = TRUE)
+#unlink("runtime_prediction_test1-files", recursive = TRUE)
 
 # Load packages
 library("BatchExperiments")
