@@ -1,7 +1,7 @@
 library(mlr)
 library(batchtools)
 library(checkmate)
-source("C:\\Users\\Maria\\Documents\\Studium\\Statistik\\Bachelorarbeit\\lrz_examples-master\\lrz_examples-master\\batchmark\\batchmark.r")
+source("batchmark.r")
 
 learners = learner.list
 tasks = list(tk)
