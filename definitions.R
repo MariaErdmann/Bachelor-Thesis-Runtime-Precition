@@ -4,11 +4,11 @@ tasks = class.dsets
 
 OMLDATASETS = tasks$did
 OMLDATASETS = tasks$did[!(tasks$did %in% c(373))] # cannot be converted because of unsupported feature type
-OMLDATASETS = OMLDATASETS[c(5,7)] # datasets where target is of type class 
+OMLDATASETS = OMLDATASETS[c(5,7,10)] # datasets where target is of type class 
 
 MEASURES = list(timetrain, timepredict, timeboth, mmce)
 
-LEARNERIDS = c("ranger", "rpart", "gbm", "naiveBayes", "glmnet") # for testing
+LEARNERIDS = c("svm") # for testing
 #LEARNERIDS = c("ranger", "rpart", "svm", "gbm", "naiveBayes", "nnet", "glmnet") # for final experiment
 
 DESSIZE = function(ps) {
@@ -38,7 +38,7 @@ makeMyParamSet = function(lrn.id, task = NULL) {
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9) 
     ),
     svm = makeParamSet(
-      makeDiscreteParam(id = "type", values = c("C-classification", "nu-classification")), # wrong typo necessary because of switch function in convertpal
+      makeDiscreteParam(id = "type", values = c("C-classification", "nu-classification")),
       makeNumericParam(id = "cost",  lower = 0, upper =  2^12,requires = quote(type=="C-classification")), # svm suggests upper limit of 1000
       makeNumericParam(id = "nu", lower = 0, upper = 1, requires = quote(type=="nu-classification")),# vielleicht hier auch 0.5 als upper?
       makeDiscreteParam(id = "kernel", values = c("linear", "polynomial", "radial", "sigmoid")),
