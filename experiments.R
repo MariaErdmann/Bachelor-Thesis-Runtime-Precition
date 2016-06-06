@@ -5,8 +5,8 @@ library(OpenML)
 
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
-#dir = "~/code/"
-dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu"
+dir = "~/code/"
+#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
