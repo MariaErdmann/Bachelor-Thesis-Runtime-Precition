@@ -70,17 +70,14 @@ addExperiments(algo.designs = list(eval = ades))
 
 summarizeExperiments()
 ids = getJobTable()$job.id
-ids = c(1:5,20:25,45:50)
+ids = c(1:2,12,21,45,70,96)
 
 
 # Auskoemmentieren für Cluseter
 submitJobs(ids)
 getStatus()
 getErrorMessages()
-# Error messages produces when using ranger: 
-# Error in setHyperPars2.Learner(learner, insert(par.vals, args)) : \n  numeric(0) is not feasible for parameter 'nu'!
-getJobPars(getErrorMessages()$job.id)
-# Looking at the parameters nu should be NA since type = "C-classification"
+
 
 # Results
 # res = reduceResultsList(ids, fun = function (r) r, reg = regis)
