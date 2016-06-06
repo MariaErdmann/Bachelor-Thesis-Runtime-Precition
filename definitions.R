@@ -1,5 +1,5 @@
-load("~/code/class.dsets.RData")
-#load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu/class.dsets.RData")
+#load("~/code/class.dsets.RData")
+load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu/class.dsets.RData")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
@@ -8,7 +8,7 @@ OMLDATASETS = OMLDATASETS[c(5,7,10)] # datasets where target is of type class
 
 MEASURES = list(timetrain, timepredict, timeboth, mmce)
 
-LEARNERIDS = c("svm") # for testing
+LEARNERIDS = c("ranger", "svm") # for testing (change to test other algorithms)
 #LEARNERIDS = c("ranger", "rpart", "svm", "gbm", "naiveBayes", "nnet", "glmnet") # for final experiment
 
 DESSIZE = function(ps) {
@@ -134,7 +134,7 @@ CONVERTPARVAL = function(par.vals, task, lrn.id) {
     if (lrn.id == "svm") {
       par.vals$type = as.character(par.vals$type)
       par.vals$kernel = as.character(par.vals$kernel)
-      par.vals$nu = par.vals$nu * (par.vals$sub.sample.frac - 0.1) # nu bw. [0,1], and is relative to trainingset size
+      if (par.vals$type == "nu-classification") par.vals$nu = par.vals$nu * (par.vals$sub.sample.frac - 0.1) # nu bw. [0,1], and is relative to trainingset size
     }
     if (lrn.id == "gbm") {
       if (n.class == 2) par.vals$distribution = as.character(par.vals$distribution)
