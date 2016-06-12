@@ -6,7 +6,7 @@ library(OpenML)
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
 #dir = "~/code/"
-dir = "C:\Users\Maria\Documents\Studium\Statistik\Bachelorarbeit\Bachelor-Thesis-Runtime-Precition"
+dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
