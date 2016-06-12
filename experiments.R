@@ -5,8 +5,8 @@ library(OpenML)
 
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
-dir = "~/code/"
-#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu"
+#dir = "~/code/"
+dir = "C:\Users\Maria\Documents\Studium\Statistik\Bachelorarbeit\Bachelor-Thesis-Runtime-Precition"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
@@ -35,15 +35,16 @@ addAlgorithm("eval", fun = function(job, data, instance, lrn.id, ...) {
   par.vals = CONVERTPARVAL(par.vals, task, lrn.id)
   sub.sample.frac = par.vals[["sub.sample.frac"]]
   par.vals = par.vals[names(par.vals) != "sub.sample.frac"]
-  lrn.id = paste0(type, ".", lrn.id)
-  lrn = makeLearner(lrn.id)
+  if (lrn.id %in% c("svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid")) lrn.id.mlr = "svm" else lrn.id.mlr = lrn.id
+  lrn.id.mlr = paste0(type, ".", lrn.id.mlr)
+  lrn = makeLearner(lrn.id.mlr)
   lrn = setHyperPars(lrn, par.vals = par.vals)
   measures = MEASURES
   #mod = train(lrn, task)
   #p = predict(mod, task)
-  #list(performance(pred = p, measures = measures, model = mod), lrn)
+  #r= performance(pred = p, measures = measures, model = mod)
   # instead of predict() und performance()
-  subsample(lrn, task, iters = 1L, split = sub.sample.frac, stratify = FALSE, models = TRUE, keep.pred = FALSE, measures = measures)
+  subsample(lrn, task, iters = 1L, split = sub.sample.frac, stratify = TRUE, models = FALSE, keep.pred = FALSE, measures = measures)
 })
 
 # Random design
@@ -56,38 +57,51 @@ for (lid in LEARNERIDS) {
   d = cbind(lrn.id = lid, d, stringsAsFactors = FALSE)
   ades = rbind.fill(ades, d)
 }
-addExperiments(algo.designs = list(eval = ades))
 
-# FIXME: If  I need to add the defaults of each learner
-# defaults
-# ades_def = data.frame()
-# for (lid in "ranger") {
-#   ps = makeMyDefaultParamSet(lid)
-#   d = generateGridDesign(ps, resolution = 1)
-#   d = cbind(lrn.id = lid, d, stringsAsFactors = FALSE)
-#   ades_def = rbind.fill(ades_def, d)
-# }
+# add default algos
+addAlgorithm("default", fun = function(job, data, instance, lrn.id, ...) {
+  par.vals = list(...)
+  oml.dset = getOMLDataSet(data$did)             
+  task = convertOMLDataSetToMlr(oml.dset)
+  type = getTaskType(task)
+  par.vals = par.vals[!(is.na(par.vals))]
+  par.vals = CONVERTPARVAL.DEF(par.vals, task, lrn.id)
+  if (lrn.id %in% c("svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid")) lrn.id.mlr = "svm" else lrn.id.mlr = lrn.id
+  lrn.id.mlr = paste0(type, ".", lrn.id.mlr)
+  lrn = makeLearner(lrn.id.mlr)
+  lrn = setHyperPars(lrn, par.vals = par.vals)
+  measures = MEASURES
+  mod = train(lrn, task)
+  #p = predict(mod, task)
+  #r= performance(pred = p, measures = measures, model = mod)
+  # instead of predict() und performance()
+  subsample(lrn, task, iters = 1L, split = 0.67, stratify = TRUE, models = FALSE, keep.pred = FALSE, measures = measures)
+})
+
+ades_def = data.frame()
+for (lid in LEARNERIDS) {
+  ps = makeMyDefaultParamSet(lid)
+  d = generateGridDesign(ps, resolution = 1)
+  d = cbind(lrn.id = lid, d, stringsAsFactors = FALSE)
+  ades_def = rbind.fill(ades_def, d)
+}
+addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
+#addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
 
 summarizeExperiments()
 ids = getJobTable()$job.id
-ids = c(1:2,12,21,45,70,96)
+ids = c(1:3, 14,17,39)
 
-
-# Auskoemmentieren für Cluseter
-submitJobs(ids)
+# Comment for cluster (just for testing purposes)
+#submitJobs(ids)
 getStatus()
 getErrorMessages()
 
 
 # Results
-# res = reduceResultsList(ids, fun = function (r) r, reg = regis)
-# Does not produce a data table any more because of the class of subsample, I guess
-# res = reduceResultsDataTable(1, fun = function(r) as.data.frame(as.list(r)), reg = regis)
-# res
-# hyper_pars = getJobPars(ids)
-# hyper_pars
-
-# zu Debugzwecken
-#lrn.id = "ranger"
-#par.vals = as.list(ades[1,-1])
-#data$did = 457
+#res = reduceResultsList(ids, fun = function (r) r, reg = regis)
+#res = reduceResultsDataTable(ids, fun = function(r) data.frame(as.list(r$aggr)), reg = regis)
+#res
+#hyper_pars = getJobTable(ids)
+#hyper_pars
+#hyper.pars.time = merge(hyper_pars, res, by = "job.id")
