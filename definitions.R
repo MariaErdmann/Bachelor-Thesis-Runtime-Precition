@@ -1,15 +1,14 @@
 #load("~/code/class.dsets.RData")
-load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Code_neu/class.dsets.RData")
+load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Precition-master/class.dsets.RData")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
-OMLDATASETS = tasks$did[!(tasks$did %in% c(373))] # cannot be converted because of unsupported feature type
-OMLDATASETS = OMLDATASETS[c(5,7,10)] # datasets where target is of type class 
+OMLDATASETS = OMLDATASETS[c(2,4,7)]
 
 MEASURES = list(timetrain, timepredict, timeboth, mmce)
 
-LEARNERIDS = c("ranger", "svm") # for testing (change to test other algorithms)
-#LEARNERIDS = c("ranger", "rpart", "svm", "gbm", "naiveBayes", "nnet", "glmnet") # for final experiment
+LEARNERIDS = c("nnet") # for testing (change to test other algorithms)
+#LEARNERIDS = c("ranger", "rpart", "svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid", "gbm", "glmnet", "naiveBayes", "nnet") # for final experiment
 
 DESSIZE = function(ps) {
   2 * sum(getParamLengths(ps)) # for testing
@@ -19,96 +18,121 @@ DESSIZE = function(ps) {
 makeMyParamSet = function(lrn.id, task = NULL) {
   switch(lrn.id,
     ranger = makeParamSet(
-      makeIntegerParam(id = "num.trees", lower = 50, upper = 10000),
+      makeIntegerParam(id = "num.trees", lower = 1, upper = 1000),
       makeLogicalParam(id = "replace"),
       makeNumericParam(id = "sample.fraction", lower = 0, upper = 1),
       makeNumericParam(id = "mtry", lower = 0, upper = 1),
-      makeNumericParam(id = "min.node.size", lower = 0, upper = 0.5),
+      makeLogicalParam(id = "respect.unordered.factors"),
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9) # Split parameter for subsample
     ),
     rpart = makeParamSet(
       makeNumericParam(id = "minsplit", lower = 0, upper = 0.5),
       makeNumericParam(id = "minbucket", lower = 0, upper = 0.5),
-      makeNumericParam(id = "cp", lower = 0, upper = 1),
-      #makeNumericParam(id = "maxcompete", lower = 0, upper = 0.5), ? dependent on number of values in features, how to implement?
-      makeNumericParam(id = "maxsurrogate", lower = 0, upper = 1), # not sure about the range
-      makeDiscreteParam(id = "usesurrogate", values = 0:2),
-      makeDiscreteParam(id = "surrogatestyle", values = 0:1),
-      makeIntegerParam(id = "maxdepth", lower = 1L, upper = 30L), # ?
+      makeNumericParam(id = "cp", lower = -4, upper = -1),
+      makeIntegerParam(id = "maxdepth", lower = 1L, upper = 30L),
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9) 
     ),
-    svm = makeParamSet(
-      makeDiscreteParam(id = "type", values = c("C-classification", "nu-classification")),
-      makeNumericParam(id = "cost",  lower = 0, upper =  2^12,requires = quote(type=="C-classification")), # svm suggests upper limit of 1000
-      makeNumericParam(id = "nu", lower = 0, upper = 1, requires = quote(type=="nu-classification")),# vielleicht hier auch 0.5 als upper?
-      makeDiscreteParam(id = "kernel", values = c("linear", "polynomial", "radial", "sigmoid")),
-      makeIntegerParam(id = "degree", lower = 1L, upper = 5L, requires = quote(kernel=="polynomial")),
-      makeNumericParam(id = "coef0", lower = 0, upper = 8,requires = quote(kernel=="polynomial" || kernel=="sigmoid")), # everything above 8 throws error
-      makeNumericParam(id = "gamma", lower = 0, upper = 100, requires = quote(kernel!="linear")),
-      #makeNumericParam(id = "cachesize", default = 40L), ? Reasonable ranges?
-      makeNumericParam(id = "tolerance", lower = 0, upper = 0.5),
+    svm.linear = makeParamSet(
+      makeNumericParam(id = "cost",  lower = -12, upper =  12),
+      makeDiscreteParam(id = "kernel", values = c("linear")),
+      makeIntegerParam(id = "cachesize", lower = 5, upper = 200),
       makeLogicalParam(id = "shrinking"),
-      # why are scale and epsilon missing as parameters?
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
+    ),
+    svm.polynomial = makeParamSet(
+      makeNumericParam(id = "cost",  lower = -12, upper =  12),
+      makeDiscreteParam(id = "kernel", values = c("polynomial")),
+      makeIntegerParam(id = "degree", lower = 1L, upper = 5L),
+      makeNumericParam(id = "gamma", lower = -12, upper = 12),
+      makeIntegerParam(id = "cachesize", lower = 5, upper = 200),
+      makeLogicalParam(id = "shrinking"),
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
+    ),
+    svm.radial = makeParamSet(
+      makeNumericParam(id = "cost",  lower = -12, upper =  12),
+      makeDiscreteParam(id = "kernel", values = c("radial")),
+      makeNumericParam(id = "gamma", lower = -12, upper = 12),
+      makeIntegerParam(id = "cachesize", lower = 5, upper = 200),
+      makeLogicalParam(id = "shrinking"),
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
+    ),
+    svm.sigmoid = makeParamSet(
+      makeNumericParam(id = "cost",  lower = -12, upper =  12), 
+      makeDiscreteParam(id = "kernel", values = c("sigmoid")),
+      makeNumericParam(id = "gamma", lower = -12, upper = 12),
+      makeIntegerParam(id = "cachesize", lower = 5, upper = 200),
+      makeLogicalParam(id = "shrinking"),
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     ),
     gbm = makeParamSet(
-      makeDiscreteParam(id = "distribution", values = c("bernoulli", "adaboost", "huberized")),
       makeIntegerParam(id = "n.trees", lower = 500L, upper = 10000L),
-      #makeIntegerParam(id = "cv.folds", lower = 0L, upper = 10L), 
-      # Problem: cv.fold = 1 throws error "Object 'p' not found."
       makeIntegerParam(id = "interaction.depth", lower = 1L, upper = 5L),
-      makeNumericParam(id = "n.minobsinnode", lower = 0, upper = 0.5),
-      makeNumericParam(id = "shrinkage", lower = 10^-4, upper = 10^-1),
+      makeNumericParam(id = "shrinkage", lower = -4, upper = -1),
       makeNumericParam(id = "bag.fraction", lower = 0, upper = 1),
-      makeNumericParam(id = "train.fraction", lower = 0, upper = 1),
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     ),
     glmnet = makeParamSet(
       makeNumericParam(id = "alpha", lower = 0, upper = 1),
-      makeNumericParam(id = "s", lower = 0, upper = 1),
-      makeLogicalParam(id = "exact"),
-      makeIntegerParam(id = "nlambda", lower = 1, upper = 2^12),
-      makeNumericParam(id = "lambda.min.ratio", lower = 0, upper = 1),
-      makeLogicalParam(id = "standardize"),
-      makeLogicalParam(id = "intercept"),
-      #makeNumericParam(id = "thresh", lower = 0, upper =),
-      #makeIntegerParam(id = "dfmax", lower = 0L, upper =),
-      #makeIntegerParam(id = "pmax", lower = 0L, upper =), 
-      makeIntegerParam(id = "maxit", lower = 1L, upper = 1000000L), # check upper limit
-      makeDiscreteParam(id = "type.logistic", values = c("Newton", "modified.Newton")),
-      makeDiscreteParam(id = "type.multinomial", values = c("ungrouped", "grouped")),
-      makeNumericParam(id = "fdev", lower = 0, upper = 1), #?
-      makeNumericParam(id = "devmax", lower = 0, upper = 1), # ?
-      makeNumericParam(id = "eps", lower = 0, upper = 0.05),
-      makeNumericParam("sub.sample.frac", lower = 0.5, upper = 0.9) #?
-      # makeNumericParam(id = "big", default = 9.9e35),
-      #makeIntegerParam(id = "mnlam", default = 5, lower = 1),
-      #makeNumericParam(id = "pmin", lower = 0.001, upper = 1)
-      #makeNumericParam(id = "exmx", lower =, upper =),
-      #makeNumericParam(id = "prec", default = 1e-10),
-      #makeIntegerParam(id = "mxit", lower = 1L, upper =),
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     ),
     naiveBayes = makeParamSet(
-      makeNumericParam(id = "laplace", lower = 0, upper = 1),
-      #? Probably better to fix it to one, so that it can run on all dsets
-      makeNumericParam("sub.sample.frac", lower = 0.5, upper = 0.9)
-      
+      makeDiscreteParam(id = "laplace", values = c("1")),
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
+    ),
+    nnet = makeParamSet(
+      #makeIntegerParam(id = "size", lower = 3L, upper = 45L), # optional: mean(p, n.class) put in convertparval
+      makeIntegerParam(id = "maxit", lower = 2L, upper = 1000L),
+      makeLogicalParam(id = "skip"),
+      makeNumericParam(id = "rang", lower = 0, upper = 1), # not sure if this should be used
+      makeNumericParam(id = "decay", lower = 0.00001, upper = 1.0),
+      #makeIntegerParam(id = "MaxNWts", lower = 1L, upper = 1L),
+      makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     )
   )
 }
 
-# FIXME: Shall Default Param Sets be implemented?
-# makeMyDefaultParamSet = function (lrn.id, task = NULL) {
-#   switch(lrn.id,
-#     ranger = makeParamSet(
-#       makeIntegerParam("num.trees", lower = 10000, upper = 10000),
-#       makeLogicalParam("replace"),
-#       makeDiscreteParam("sub.sample.fraction", values = c("1", "0.632")),
-#       makeDiscreteParam("mtry", values = c("log", "sqrt", "1", "2")),
-#       makeDiscreteParam("min.node.size", values = c("log", "sqrt", "5", "1"))
-#     )
-#   ) 
-# }
+
+makeMyDefaultParamSet = function (lrn.id, task = NULL) {
+  switch(lrn.id,
+    ranger = makeParamSet(
+      makeIntegerParam(id = "mtry", lower = 1L, upper = 1L),
+      makeIntegerParam(id = "min.node.size", lower = 1L, upper = 1L),
+      makeNumericParam(id = "sample.fraction", lower = 1L, upper = 1L)
+    ),
+    rpart = makeParamSet(
+      makeIntegerParam(id = "minsplit", lower = 20L, upper = 20L) # at least one Param needs to be defined.
+    ),
+    svm.linear = makeParamSet(
+      makeDiscreteParam(id = "kernel", values = c("linear"))
+    ),
+    svm.polynomial = makeParamSet(
+      makeDiscreteParam(id = "kernel", values = c("polynomial")),
+      makeNumericParam(id = "gamma", lower = 1, upper = 1)
+    ),
+    svm.radial = makeParamSet(
+      makeDiscreteParam(id = "kernel", values = c("radial")),
+      makeNumericParam(id = "gamma", lower = 1, upper = 1)
+    ),
+    svm.sigmoid = makeParamSet(
+      makeDiscreteParam(id = "kernel", values = c("sigmoid")),
+      makeNumericParam(id = "gamma", lower = 1, upper = 1)
+    ),
+    gbm = makeParamSet(
+      makeIntegerParam(id = "n.trees", lower = 100L, upper = 100L) # need at least one param
+    ),
+    glmnet = makeParamSet(
+      makeNumericParam(id = "lambda.min.ratio", lower = 1L, upper = 1L),
+      makeIntegerParam(id = "dfmax", lower = 1L, upper = 1L),
+      makeIntegerParam(id = "pmax", lower = 1L, upper = 1L)
+    ),
+    naiveBayes = makeParamSet(
+      makeNumericParam(id = "laplace", lower = 1, upper = 1) # not set do default in order to prevent algo from breaking
+    ),
+    nnet = makeParamSet(
+      makeIntegerParam(id = "size", lower = 3L, upper = 3L)
+    )
+  )
+}
 
 
 CONVERTPARVAL = function(par.vals, task, lrn.id) {
@@ -119,31 +143,81 @@ CONVERTPARVAL = function(par.vals, task, lrn.id) {
   if (is.null(par.vals$default)) {
     if (lrn.id == "ranger") {
       par.vals$sample.fraction = max(par.vals$sample.fraction, 1/n) # sollte nicht kleiner als "1" Beobachtung sein
-      par.vals$mtry = ceiling(par.vals$mtry * p)
-      par.vals$min.node.size = ceiling(par.vals$min.node.size * ceiling(par.vals$sample.fraction * par.vals$sub.sample.frac * n)) # nodesize darf nicht größer sein als sampsize!
+      par.vals$mtry = max(1, ceiling(par.vals$mtry * p))
     }
     if (lrn.id == "rpart") {
-      par.vals$minsplit = max(1, ceiling(par.vals$minsplit * ceiling(par.vals$sub.sample.frac * n))) 
-      # check with Bernd: two 'ceilings' necessary?
-      par.vals$minbucket = ceiling(par.vals$minbucket * par.vals$sub.sample.frac * n)
-      #par.vals$maxcompete = Ausprägungen_in_Variablen * p
-      par.vals$maxsurrogate = max(1,ceiling(par.vals$maxsurrogate * par.vals$sub.sample.frac * n))
-      par.vals$usesurrogate = as.numeric(as.character(par.vals$usesurrogate))
-      par.vals$surrogatestyle = as.numeric(as.character(par.vals$surrogatestyle))
+      par.vals$minsplit = max(1, ceiling(par.vals$minsplit * par.vals$sub.sample.frac * n)) # Adapt?
+      par.vals$minbucket = ceiling(par.vals$minbucket * par.vals$sub.sample.frac * n) # Adapt?
+      par.vals$cp = 10^par.vals$cp
     }
-    if (lrn.id == "svm") {
-      par.vals$type = as.character(par.vals$type)
+    if (lrn.id == "svm.linear") {
       par.vals$kernel = as.character(par.vals$kernel)
-      if (par.vals$type == "nu-classification") par.vals$nu = par.vals$nu * (par.vals$sub.sample.frac - 0.1) # nu bw. [0,1], and is relative to trainingset size
+      par.vals$cost = 2^par.vals$cost
+    }
+    if (lrn.id == "svm.polynomial") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$cost = 2^par.vals$cost
+      par.vals$gamma = 2^par.vals$gamma
+    }
+    if (lrn.id == "svm.radial") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$cost = 2^par.vals$cost
+      par.vals$gamma = 2^par.vals$gamma
+    }
+    if (lrn.id == "svm.sigmoid") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$cost = 2^par.vals$cost
+      par.vals$gamma = 2^par.vals$gamma
     }
     if (lrn.id == "gbm") {
-      if (n.class == 2) par.vals$distribution = as.character(par.vals$distribution)
-      if (n.class > 2) par.vals$distribution = switch(as.character(par.vals$distribution), bernoulli = "multinomial", adaboost = "multinomial", huberized = "multinomial")
-      par.vals$n.minobsinnode = max(1, (ceiling(par.vals$n.minobsinnode * (par.vals$sub.sample.frac * par.vals$train.fraction *par.vals$bag.fraction)/2 * n)-1))
+      par.vals$shrinkage = 10^par.vals$shrinkage
+    }
+    if (lrn.id == "naiveBayes") {
+      par.vals$laplace = as.numeric(par.vals$laplace)
+    }
+    # if (lrn.id == "nnet") {
+    #  par.vals$MaxNWts = 21 * par.vals$size
+    # }
+  } else {
+  }
+  return(par.vals)
+}
+
+
+
+
+CONVERTPARVAL.DEF = function(par.vals, task, lrn.id) {
+  typ = getTaskType(task)
+  n = getTaskSize(task)
+  p = getTaskNFeats(task)
+  n.class = length(getTaskClassLevels(task))
+  if (is.null(par.vals$default)) {
+    if (lrn.id == "ranger") {
+      par.vals$mtry = max(1, ceiling(sqrt(par.vals$mtry * p)))
+    }
+    if (lrn.id == "svm.linear") {  
+      par.vals$kernel = as.character(par.vals$kernel)
+    }
+    if (lrn.id == "svm.polynomial") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$gamma = par.vals$gamma/n
+    }
+    if (lrn.id == "svm.radial") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$gamma = par.vals$gamma/n
+    }
+    if (lrn.id == "svm.sigmoid") {
+      par.vals$kernel = as.character(par.vals$kernel)
+      par.vals$gamma = par.vals$gamma/n
     }
     if (lrn.id == "glmnet") {
-      par.vals$type.logistic = as.character(par.vals$type.logistic)
-      par.vals$type.multinomial = as.character(par.vals$type.multinomial)
+      if (n < p) {
+        par.vals$lambda.min.ratio = par.vals$lambda.min.ratio*0.01
+      } else {
+        par.vals$lambda.min.ratio = par.vals$lambda.min.ratio*0.0001
+      }
+      par.vals$dfmax = par.vals$dfmax*n +1
+      par.vals$pmax = min(par.vals$dfmax * 2+20, n)
     }
   } else {
   }
