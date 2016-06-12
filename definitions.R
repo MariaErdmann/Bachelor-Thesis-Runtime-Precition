@@ -1,5 +1,5 @@
 #load("~/code/class.dsets.RData")
-load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Precition-master/class.dsets.RData")
+load("C:\Users\Maria\Documents\Studium\Statistik\Bachelorarbeit\Bachelor-Thesis-Runtime-Precition")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
