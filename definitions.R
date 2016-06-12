@@ -1,5 +1,5 @@
 #load("~/code/class.dsets.RData")
-load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction")
+load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/class.dsets.RData")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
@@ -127,10 +127,10 @@ makeMyDefaultParamSet = function (lrn.id, task = NULL) {
     ),
     naiveBayes = makeParamSet(
       makeNumericParam(id = "laplace", lower = 1, upper = 1) # not set do default in order to prevent algo from breaking
-    )#,
-    #nnet = makeParamSet(
-    #  makeIntegerParam(id = "size", lower = 3L, upper = 3L)
-    #)
+    ),
+    nnet = makeParamSet(
+      makeIntegerParam(id = "size", lower = 3L, upper = 3L)
+    )
   )
 }
 
