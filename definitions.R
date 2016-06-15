@@ -1,18 +1,18 @@
-#load("~/code/class.dsets.RData")
-load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/class.dsets.RData")
+load("~/code/class.dsets.RData")
+#load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/class.dsets.RData")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
-OMLDATASETS = OMLDATASETS[c(2,4,7)]
+#OMLDATASETS = OMLDATASETS[10]
 
 MEASURES = list(timetrain, timepredict, timeboth, mmce)
 
-LEARNERIDS = c("nnet") # for testing (change to test other algorithms)
-#LEARNERIDS = c("ranger", "rpart", "svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid", "gbm", "glmnet", "naiveBayes", "nnet") # for final experiment
+#LEARNERIDS = c("glmnet") # for testing (change to test other algorithms)
+LEARNERIDS = c("ranger", "rpart", "svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid", "gbm", "glmnet", "naiveBayes", "nnet") # for final experiment
 
 DESSIZE = function(ps) {
-  2 * sum(getParamLengths(ps)) # for testing
-  # 10 * sum(getParamLengths(ps)) # final dessize; actually growth would be exponential
+  #1 * sum(getParamLengths(ps)) # for testing
+  10 * sum(getParamLengths(ps)) # final dessize; actually growth would be exponential
 }
 
 makeMyParamSet = function(lrn.id, task = NULL) {
@@ -80,12 +80,10 @@ makeMyParamSet = function(lrn.id, task = NULL) {
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     ),
     nnet = makeParamSet(
-      #makeIntegerParam(id = "size", lower = 3L, upper = 45L), # optional: mean(p, n.class) put in convertparval
+      makeIntegerParam(id = "size", lower = 1L, upper = 20L),
       makeIntegerParam(id = "maxit", lower = 2L, upper = 1000L),
       makeLogicalParam(id = "skip"),
-      makeNumericParam(id = "rang", lower = 0, upper = 1), # not sure if this should be used
       makeNumericParam(id = "decay", lower = 0.00001, upper = 1.0),
-      #makeIntegerParam(id = "MaxNWts", lower = 1L, upper = 1L),
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     )
   )
@@ -126,7 +124,7 @@ makeMyDefaultParamSet = function (lrn.id, task = NULL) {
       makeIntegerParam(id = "pmax", lower = 1L, upper = 1L)
     ),
     naiveBayes = makeParamSet(
-      makeNumericParam(id = "laplace", lower = 1, upper = 1) # not set do default in order to prevent algo from breaking
+      makeNumericParam(id = "laplace", lower = 1, upper = 1) # not set to default in order to prevent algo from breaking
     ),
     nnet = makeParamSet(
       makeIntegerParam(id = "size", lower = 3L, upper = 3L)
@@ -175,9 +173,6 @@ CONVERTPARVAL = function(par.vals, task, lrn.id) {
     if (lrn.id == "naiveBayes") {
       par.vals$laplace = as.numeric(par.vals$laplace)
     }
-    # if (lrn.id == "nnet") {
-    #  par.vals$MaxNWts = 21 * par.vals$size
-    # }
   } else {
   }
   return(par.vals)

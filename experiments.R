@@ -5,8 +5,8 @@ library(OpenML)
 
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
-#dir = "~/code/"
-dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
+dir = "~/code/"
+#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
@@ -88,14 +88,14 @@ for (lid in LEARNERIDS) {
 addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
 #addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
 
-summarizeExperiments()
-ids = getJobTable()$job.id
-ids = c(1:3, 14,17,39)
+#summarizeExperiments()
+#ids = getJobTable()$job.id
+#ids = c(1:3, 509)
 
 # Comment for cluster (just for testing purposes)
 #submitJobs(ids)
-getStatus()
-getErrorMessages()
+#getStatus()
+#getErrorMessages()
 
 
 # Results
