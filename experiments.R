@@ -5,8 +5,8 @@ library(OpenML)
 
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
-dir = "~/code/"
-#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
+#dir = "~/code/"
+dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
@@ -85,8 +85,8 @@ for (lid in LEARNERIDS) {
   d = cbind(lrn.id = lid, d, stringsAsFactors = FALSE)
   ades_def = rbind.fill(ades_def, d)
 }
-addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
-#addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
+#addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
+addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
 
 #summarizeExperiments()
 #ids = getJobTable()$job.id
