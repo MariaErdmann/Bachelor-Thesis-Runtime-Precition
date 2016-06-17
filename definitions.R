@@ -1,13 +1,13 @@
-#load("~/code/class.dsets.RData")
-load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/class.dsets.RData")
+load("~/code/class.dsets.RData")
+#load("C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/class.dsets.RData")
 tasks = class.dsets
 
 OMLDATASETS = tasks$did
-#OMLDATASETS = OMLDATASETS[10]
+OMLDATASET = OMLDATASETS[1]
 
 MEASURES = list(timetrain, timepredict, timeboth, mmce)
 
-#LEARNERIDS = c("glmnet") # for testing (change to test other algorithms)
+#LEARNERIDS = c("gbm") # for testing (change to test other algorithms)
 LEARNERIDS = c("ranger", "rpart", "svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid", "gbm", "glmnet", "naiveBayes", "nnet") # for final experiment
 
 DESSIZE = function(ps) {

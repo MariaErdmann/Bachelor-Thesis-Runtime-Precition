@@ -5,24 +5,27 @@ library(OpenML)
 
 setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
 
-#dir = "~/code/"
-dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
+dir = "~/code/"
+#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
 setwd(paste0(dir,"/Results"))
 source(paste0(dir,"/definitions.R"))
 
-unlink("runtime-try", recursive = TRUE)
-regis = makeExperimentRegistry("runtime-try", 
+# registry name depends on dataset used
+regname = paste0("reg", OMLDATASET)
+
+unlink(regname, recursive = TRUE)
+regis = makeExperimentRegistry(regname, 
   packages = c("mlr", "OpenML", "ranger", "methods"),
   source = "../definitions.R",
   work.dir = ".",
-  conf.file = "../"
+  conf.file = "../",
+  seed = 334
 )
 
-# add our selected OML dsets as problems
-for (did in OMLDATASETS) {
-  data = list(did = did)
-  addProblem(name = as.character(did), data = data)
-}
+# add selected OML dataset as problem
+data = list(did = OMLDATASET)
+addProblem(name = as.character(OMLDATASET), data = data)
+
 
 # add one generic 'algo' that evals the algos in hyperpar space
 addAlgorithm("eval", fun = function(job, data, instance, lrn.id, ...) {
@@ -48,7 +51,6 @@ addAlgorithm("eval", fun = function(job, data, instance, lrn.id, ...) {
 })
 
 # Random design
-set.seed(124)
 ades = data.frame()
 for (lid in LEARNERIDS) {
   ps = makeMyParamSet(lid, task = NULL)
@@ -85,23 +87,23 @@ for (lid in LEARNERIDS) {
   d = cbind(lrn.id = lid, d, stringsAsFactors = FALSE)
   ades_def = rbind.fill(ades_def, d)
 }
-#addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
-addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
+addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 10)
+#addExperiments(algo.designs = list(eval = ades, default = ades_def), repls = 1)
 
 #summarizeExperiments()
 #ids = getJobTable()$job.id
 #ids = c(1:3, 509)
 
 # Comment for cluster (just for testing purposes)
-#submitJobs(ids)
-#getStatus()
-#getErrorMessages()
+# submitJobs()
+# getStatus()
+# getErrorMessages()
 
 
 # Results
 #res = reduceResultsList(ids, fun = function (r) r, reg = regis)
-#res = reduceResultsDataTable(ids, fun = function(r) data.frame(as.list(r$aggr)), reg = regis)
+#res2 = reduceResultsDataTable(fun = function(r) data.frame(as.list(r$aggr)), reg = regis)
 #res
-#hyper_pars = getJobTable(ids)
+#hyper_pars2 = getJobTable()
 #hyper_pars
-#hyper.pars.time = merge(hyper_pars, res, by = "job.id")
+#hyper.pars.time2 = merge(hyper_pars2, res2, by = "job.id")
