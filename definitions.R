@@ -11,10 +11,10 @@ MEASURES = list(timetrain, timepredict, timeboth, mmce)
 LEARNERIDS = c("ranger", "rpart", "svm.linear", "svm.polynomial", "svm.radial", "svm.sigmoid", "gbm", "glmnet", "naiveBayes", "nnet") # for final experiment
 
 DESSIZE = function(ps) {
-  ls = lapply(ps$pars, FUN = function(x) ifelse((x$type == "discrete" & length(x$values) == 1), 0, 1))
+  ls = lapply(ps$pars, FUN = function(x) ifelse(((x$type == "discrete" & length(x$values) == 1) | (x$type %in% c("numeric", "integer") && x$lower == x$upper)) , 0, 1))
   dimension = Reduce("+",ls)
-  1 * dimension # for testing
-  #10 * dimension # final dessize; actually growth would be exponential
+  #1 * dimension # for testing
+  10 * dimension # final dessize; actually growth would be exponential
 }
 
 makeMyParamSet = function(lrn.id, task = NULL) {
@@ -82,7 +82,8 @@ makeMyParamSet = function(lrn.id, task = NULL) {
       makeNumericParam(id = "sub.sample.frac", lower = 0.5, upper = 0.9)
     ),
     nnet = makeParamSet(
-      makeIntegerParam(id = "size", lower = 1L, upper = 20L),
+      makeIntegerParam(id = "size", lower = 1L, upper = 10L),
+      makeIntegerParam(id = "MaxNWts", lower = 100000L, upper = 100000L),
       makeIntegerParam(id = "maxit", lower = 2L, upper = 1000L),
       makeLogicalParam(id = "skip"),
       makeNumericParam(id = "decay", lower = 0.00001, upper = 1.0),
@@ -168,6 +169,10 @@ CONVERTPARVAL = function(par.vals, task, lrn.id) {
     }
     if (lrn.id == "gbm") {
       par.vals$shrinkage = 10^par.vals$shrinkage
+      par.vals$bag.fraction = max(22/(n*par.vals$sub.sample.frac), par.vals$bag.fraction)
+      # bag.fraction * nTrain needs to be greater than 2*n.minobsinnode + 1. 
+      # nTrain = n *sub.sample.frac and n.minobsinnode = 10, additional + 1 to 
+      # make it clearly greater
     }
   } else {
   }
