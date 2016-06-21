@@ -3,12 +3,15 @@ library(batchtools)
 library(plyr)
 library(OpenML)
 
+# for cluster
+source("~/code/definitions.R")
+dir = "/naslx/projects/ua341/di49sib/"
+setwd(dir)
 
-# checks single results
-dir = "~/code/"
-#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
-setwd(paste0(dir,"/Results"))
-source(paste0(dir,"/definitions.R"))
+# for testing
+# dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/"
+# setwd(paste0(dir,"Results"))
+# source(paste0(dir,"/definitions.R"))
 
 
 regname.list = c("reg1554", "reg478") # for testing purposes
@@ -18,39 +21,48 @@ regname.list = c("reg1554", "reg478") # for testing purposes
 big.res = data.frame()
 error.frame = data.frame()
 for (regname in regname.list) {
-  regname = loadRegistry(regname)
-  done = getStatus(reg = regname)$done + getStatus(reg = regname)$error + getStatus(reg = regname)$expired
-  if (done == getStatus(reg = regname)$submitted) {
+  reg = loadRegistry(regname)
+  done = getStatus()$done + getStatus()$error + getStatus()$expired
+  if (done == getStatus(reg = reg)$submitted) {
   
     # create a table with errors
     error.jobs = data.frame()
     if (getStatus()$error > 0) {
       error.jobs = as.data.frame(subset(getJobTable(), subset = !is.na(error),
         select = -c(submitted, memory, batch.id, time.queued,
-          pars.hash, resources)))
+          pars.hash)))
     }
   
     # get the ids which do not have an error to create results
+    all.ids = getJobStatus()$job.id
     error.ids = getErrorMessages()$job.id
     if (length(error.ids) != 0) {
-      all.ids = getJobStatus()$job.id
       ids.ok = all.ids[-error.ids]
     } else {
       ids.ok = all.ids
     }
   
     # Create Results
-    time = reduceResultsDataTable(ids.ok, fun = function(r) data.frame(as.list(r$aggr)),
-      reg = regname)
-    hyper.pars = getJobTable(ids.ok, reg = regname)
-    res = merge(hyper.pars, time, by = "job.id")
+    if (length(error.ids) != length(all.ids)) {
+      time = reduceResultsDataTable(ids.ok, fun = function(r) data.frame(as.list(r$aggr)))
+      hyper.pars = getJobTable(ids.ok)
+      res = merge(hyper.pars, time, by = "job.id")
+    } else {
+      print("No results for output.")
+    }
+    
   } else {
-    print("Not yet finished.")
+    print("Not finished yet.")
   }
+  
   # Create a data.frame which contains all results and a data.frame that contains
   # all errors
   big.res = rbind(big.res, res)
+  resfile = paste0(dir, "finalresult.RData")
+  save(big.res, file = resfile)
   error.frame = rbind(error.frame, error.jobs)
+  errorfile = paste0(dir, "allerrors.RData")
+  save(error.frame, file = errorfile)
 }
 
 

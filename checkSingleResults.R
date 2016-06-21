@@ -3,25 +3,32 @@ library(batchtools)
 library(plyr)
 library(OpenML)
 
+# for testing
+# dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction/"
+# setwd(paste0(dir,"Results"))
+# source(paste0(dir,"/definitions.R"))
 
-# checks single results
-dir = "~/code/"
-#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
-setwd(paste0(dir,"/Results"))
-source(paste0(dir,"/definitions.R"))
 
-regname = paste0("reg", OMLDATASET)
-regname = loadRegistry(regname)
+# for cluster
+source("~/code/definitions.R")
+dir = "/naslx/projects/ua341/di49sib/"
+setwd(dir)
+
+
+regNAME = paste0("reg", OMLDATASET)
+reg = loadRegistry(regNAME)
 
 # check if work is done
-done = getStatus(reg = regname)$done + getStatus(reg = regname)$error + getStatus(reg = regname)$expired
-if (done == getStatus(reg = regname)$submitted) {
+done = getStatus()$done + getStatus()$error + getStatus()$expired
+if (done == getStatus()$submitted) {
   
   # create a table with errors
   if (getStatus()$error > 0) {
     error.jobs = as.data.frame(subset(getJobTable(), subset = !is.na(error),
       select = -c(submitted, memory, batch.id, time.queued,
-        pars.hash, resources)))
+        pars.hash)))
+    filename = paste0(dir, regNAME, "/errorframe.RData")
+    save(error.jobs, file = filename)
   }
   
   # get the ids which do not have an error to create results
@@ -34,11 +41,18 @@ if (done == getStatus(reg = regname)$submitted) {
   }
   
   # Create Results
-  time = reduceResultsDataTable(ids.ok, fun = function(r) data.frame(as.list(r$aggr)),
-    reg = regname)
-  hyper.pars = getJobTable(reg = regname)
-  res = merge(hyper.pars, time, by= "job.id")
+  if (length(error.ids) != length(all.ids)) {
+    time = reduceResultsDataTable(ids.ok, fun = function(r) data.frame(as.list(r$aggr)))
+    hyper.pars = getJobTable()
+    res = merge(hyper.pars, time, by= "job.id")
+    filename = paste0(dir, regNAME, "/singleres.RData")
+    save(res, file = filename)
+  } else {
+    print("No results for output.")
+  }
 } else {
   print("Not yet finished.")
 }
+
+
 
