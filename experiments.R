@@ -3,22 +3,28 @@ library(batchtools)
 library(plyr)
 library(OpenML)
 
-setOMLConfig(apikey = "6f5535ee9d1e819c0f85447006bca0c3", arff.reader = "farff")
+setOMLConfig(apikey = "1f964041d13dac76fbb6b2867d4e1f51", arff.reader = "farff")
 
+# For testing
+# dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
+# setwd(paste0(dir,"/Results"))
+# source(paste0(dir,"/definitions.R"))
+
+
+# Cluster settings
 dir = "~/code/"
-#dir = "C:/Users/Maria/Documents/Studium/Statistik/Bachelorarbeit/Bachelor-Thesis-Runtime-Prediction"
-setwd(paste0(dir,"/Results"))
-source(paste0(dir,"/definitions.R"))
+source(paste0(dir,"definitions.R"))
+setwd("/naslx/projects/ua341/di49sib")
+
 
 # registry name depends on dataset used
 regname = paste0("reg", OMLDATASET)
 
-unlink(regname, recursive = TRUE)
-regis = makeExperimentRegistry(regname, 
+#unlink(regname, recursive = TRUE)
+regname = makeExperimentRegistry(regname, 
   packages = c("mlr", "OpenML", "ranger", "methods"),
-  source = "../definitions.R",
-  work.dir = ".",
-  conf.file = "../",
+  source = "~/code/definitions.R",
+  conf.file = "~/.batchtools.conf.R",
   seed = 334
 )
 
