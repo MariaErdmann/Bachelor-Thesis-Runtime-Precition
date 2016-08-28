@@ -83,12 +83,12 @@
    * Creates all dataframes that are used for analysis and runtime prediction:
    * All dataframes are stored in the following subfolder: `~/Bachelor-Thesis-Runtime-Prediction/Results/DatasetsForAnalysis/`
    * `ResultsDDesc.RData`: contains all observations, only columns of interest are kept.
-   * `\<classifier's name\>df.RData`: contains all runtime results and hyperparameters for the classifier
-   * `\<classifier's name\>_jobid2.RData`: same as rangerdf.RData, just with an additional jobid, which is used to summaries the 10 replications of each experiment.
-   * `\<classifier's name\>dfmean.RData`: contains aggregated runtime results. Thus, it contains the runtime results after averaging across the ten replications of one experiments. This dataframe is used for runtime prediction with glmboost, glm and randomForest.
-   * `\<classifier's name\>dfgam_test.RData`: contains aggreagated runtime results. In this dataframe the numeric variables are centered. This dataframe is used for prediction of training time with gamboost.
-   * `\<classifier's name\>dfgam_pred.RData`: contains aggreagated runtime results. In this dataframe the numeric variables are centered. This dataframe is used for prediction of prediction time with gamboost.
-   * `\<classifier's name\>dfdefault.RData`: contains runtime results on the default hyperparameter settings.
+   * `<classifier's name>df.RData`: contains all runtime results and hyperparameters for the classifier
+   * `<classifier's name>_jobid2.RData`: same as rangerdf.RData, just with an additional jobid, which is used to summaries the 10 replications of each experiment.
+   * `<classifier's name>dfmean.RData`: contains aggregated runtime results. Thus, it contains the runtime results after averaging across the ten replications of one experiments. This dataframe is used for runtime prediction with glmboost, glm and randomForest.
+   * `<classifier's name>dfgam_test.RData`: contains aggreagated runtime results. In this dataframe the numeric variables are centered. This dataframe is used for prediction of training time with gamboost.
+   * `<classifier's name>dfgam_pred.RData`: contains aggreagated runtime results. In this dataframe the numeric variables are centered. This dataframe is used for prediction of prediction time with gamboost.
+   * `<classifier's name>dfdefault.RData`: contains runtime results on the default hyperparameter settings.
 
    
    
