@@ -7,7 +7,7 @@
 
 1. datasets.R
    
-   * creates a class.dsets.RData dataframe with the datasets that are analysed. Dataframe includes dataset characteristics and the dataset id (did)
+   * creates a `class.dsets.RData` dataframe with the datasets that are analysed. Dataframe includes dataset characteristics and the dataset id (did)
    * creates dset.with.factors.RData, a vector, which indicates whether the target of the dataset is a factor or not. For analysis, only datasets where the target is a factor are used
 
 2. definitions.R
