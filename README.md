@@ -21,10 +21,10 @@
   classif.glmnet
   classif.nnet
 
-  This script is sourced by experiments.R and requires class.dsets.RData
+  This script is sourced by `experiments.R` and requires `class.dsets.RData`
 
 
-3. experiments
+3. `experiments.R`
 
   Batchtools set up. Creates a job for every learner with a random param set on each dataset.
   Creates a registry for each dataset. Therfore, the dataset needs to be passed/changed manually in `definitions.R`.
