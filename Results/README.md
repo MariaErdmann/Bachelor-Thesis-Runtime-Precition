@@ -41,7 +41,9 @@
 
 5. Foler `ServerResults`: 
    
-   contains all model results for the glmboost and gamboost model.
+   contains some model results for the glmboost and gamboost model. Not all results could be loaded into the repository, since most results are bigger than 25 MB.
+
+   contains the result of the search for the optimal number of boosting iterations (result of function `cvrisk())` for all models (`cvm<classifier's name>_<model name>_<pred for prediction or test for training>`)
 
 6. `formulas.R`: 
    
