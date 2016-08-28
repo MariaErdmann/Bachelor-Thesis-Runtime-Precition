@@ -14,12 +14,12 @@
 
   Definition of learner's parameter settings, respectively the ranges of the parameters used to create a parameter set.
   It contains following learners:
-  classif.ranger
-  classif.rpart
-  classif.gbm
-  classif.naiveBayes
-  classif.glmnet
-  classif.nnet
+  * classif.ranger
+  * classif.rpart
+  * classif.gbm
+  * classif.naiveBayes
+  * classif.glmnet
+  * classif.nnet
 
   This script is sourced by `experiments.R` and requires `class.dsets.RData`
 
