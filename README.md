@@ -64,7 +64,7 @@
    * This script first needs to be run/ was run on the cluster, and the results were collected for further work on the local machine.
    Afterwards, the last part of the script is run locally, which takes `expired.RData` and modifies it a little bit in order to get
    0/1 coding for the varaibles containing information about whether the job expired due to exceeding the time limit or the
-   memory limit. It finally creates `only\_expired\_jobs.RData`
+   memory limit. It finally creates `only_expired_jobs.RData`
 
 9. `plausibilityCheck.R`
 
