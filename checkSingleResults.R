@@ -4,9 +4,9 @@ library(plyr)
 library(OpenML)
 
 # for testing
-# dir = "~/Bachelor-Thesis-Runtime-Prediction/"
+# dir = "~/Bachelor-Thesis-Runtime-Prediction/Results/"
 # setwd(paste0(dir,"Results"))
-# source(paste0(dir,"/definitions.R"))
+# source("~/Bachelor-Thesis-Runtime-Prediction/definitions.R")
 
 
 # for cluster
