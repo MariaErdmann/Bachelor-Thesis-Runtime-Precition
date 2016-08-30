@@ -66,12 +66,7 @@
    0/1 coding for the varaibles containing information about whether the job expired due to exceeding the time limit or the
    memory limit. It finally creates `only_expired_jobs.RData`
 
-9. `plausibilityCheck.R`
-
-   Script to check whether the final result dataframe, `finalresult.RData` (object called "big.res"), has no missing values in runtimes
-   and whether values are reasonable.
-
-10. `createDataframesForPred.R`
+9. `createDataframesForPred.R`
 
    * Creates new variable ObsForTrain, which is NumberOfInstances multiplied with sub.sample.frac. ObsForTrain then corresponds
    to the actual number of instances the learner has been trained on.
