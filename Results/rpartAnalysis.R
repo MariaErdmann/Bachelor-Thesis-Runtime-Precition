@@ -31,6 +31,7 @@ par(mar=c(5.1,4.1,4.1,10.1))
 plot(rpart.glmboost.test,
   ylim = range(coef(rpart.glmboost.test, which = 2:33)),
   main = "Analysis of training time on rpart - \n adjusted y-scale")
+par(opar)
 
 # Coefficients
 coefs.rpart.glm = data.frame(coef(rpart.glmboost.test, which = ""))
