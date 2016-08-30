@@ -235,7 +235,10 @@ arrange(mean.rpart.pred.by.task, desc=(Mean))
 # mmce
 # test time
 rpart.var.mmce = c(mean.mmce = mean(rpart.df.mean$mmce.test.mean), summary(rpart.sd$mmce.sd))
-sd.rpart.mmce.by.task = ddply(rpart.sd, "name", function(x) round(summary(x$mmce.sd),3))
+sd.rpart.mmce.by.task = ddply(rpart.sd, "name", function(x) {
+  x = na.omit(x$mmce.sd)
+  y = round(summary(x),3)
+}) 
 arrange(sd.rpart.mmce.by.task, desc(Mean))
 mean.rpart.mmce.by.task = ddply(rpart.df.mean, "name", function(x) round(summary(x$mmce.test.mean),3))
 arrange(mean.rpart.mmce.by.task, desc=(Mean))
