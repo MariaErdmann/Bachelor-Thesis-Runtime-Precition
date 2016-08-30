@@ -5,7 +5,7 @@ library(OpenML)
 
 # for testing
 # dir = "~/Bachelor-Thesis-Runtime-Prediction/Results/"
-# setwd(paste0(dir,"Results"))
+# setwd(paste0(dir))
 # source("~/Bachelor-Thesis-Runtime-Prediction/definitions.R")
 
 
