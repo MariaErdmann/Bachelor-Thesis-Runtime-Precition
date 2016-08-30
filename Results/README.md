@@ -21,7 +21,7 @@
    
    contains all scripts to model runtime with glmboost and gamboost.
 
-   The scripts were not run locally since the grid search for an appropriate mstop exceeds performance of my local machine.
+   The scripts were not run locally since the grid search for an appropriate mstop exceeds performance of my local machine. For testing purposes the `grid` argument of the `cvrisk`function should be changed to `1:500`.
    
    The scripts were, therefore, run on the server of the statistical departement.
    
