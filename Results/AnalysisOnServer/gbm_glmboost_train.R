@@ -16,7 +16,7 @@ gbm.glmboost.test = glmboost(gbm.glm.test.fmla, data = gbm.df.mean,
 
 # Find optimal number of boosting iterations (mstop)
 wght.m = cv(model.weights(gbm.glmboost.test), type = "kfold")
-cvm.gbm.glmboost.test = cvrisk(gbm.glmboost.test, folds = wght.m, grid = 1:1000)
+cvm.gbm.glmboost.test = cvrisk(gbm.glmboost.test, folds = wght.m, grid = 1:100000)
 
 # Create model with appropriate mstop
 mstop(cvm.gbm.glmboost.test) # 40
