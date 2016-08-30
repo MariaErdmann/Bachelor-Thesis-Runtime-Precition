@@ -396,26 +396,6 @@ p12.gam.pred = createCombinedPartialEffectPlots(input = naiveBayes.df.gam.pred$M
   model = naiveBayes.gamboost.pred, which = "MajorityClassSize", xlab = "Majority class size")
 multiplot(p10.gam.pred, p11.gam.pred, p12.gam.pred, cols = 3)
 
-
-# For comparison predicted effects of glmboost
-par(mfrow = c(1,2))
-x = seq(0, max(naiveBayes.df.gam.pred$MajorityClassSize) + 1000)
-y = coef(naiveBayes.glmboost.pred, which = "sqrt(MajorityClassSize)")*log(x)
-plot(x,y, main = "Estimated loglinear effect of \n MajorityClassSize on prediction time",
-  xlab = "MajorityClassSize", ylab = "f(MajorityClassSize)", ylim = c(0,0.7))
-
-x = seq(0, max(naiveBayes.df.gam.pred$ObsForPred) + 1000)
-y = coef(naiveBayes.glmboost.pred, which = "sqrt(ObsForPred)")*log(x)
-plot(x,y, main = "Estimated loglinear effect of \n ObsForPred on prediction time ",
-  xlab = "ObsForPred", ylab = "f(ObsForPred)", ylim = c(0,0.7))
-
-x = seq(0, max(naiveBayes.df.gam.pred$NumberOfClasses))
-y = coef(naiveBayes.glmboost.pred, which = "I(NumberOfClasses^2)") * x^2 + 
-  coef(naiveBayes.glmboost.pred, which = "sqrt(NumberOfClasses)") * log(x)
-plot(x,y)
-
-naiveBayes.df.gam.pred[naiveBayes.df.gam.pred$ObsForPred > 30000,]
-
 # Model with interaction
 load("~/Bachelor-Thesis-Runtime-Prediction/Results/ServerResults/cvm_naiveBayes_gamboost_pred_int.rda")
 load("~/Bachelor-Thesis-Runtime-Prediction/Results/ServerResults/naiveBayes_gamboost_pred_int.rda")
