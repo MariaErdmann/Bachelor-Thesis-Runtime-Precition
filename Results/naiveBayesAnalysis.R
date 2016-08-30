@@ -534,29 +534,6 @@ errors.pred.int = calculateErrorsForComparison(time = "prediction", glmboost = n
   glm.data = naiveBayes.df.mean, rF = naiveBayes.rF.pred, naiveBayes.df.mean3)
 
 # Obs vs fitted values
-plot(naiveBayes.df.mean$timetrain.test.mean, predict(naiveBayes.glmboost.test,
-  type = "response", newdata = naiveBayes.df.mean), col = "red",
-  xlab = "observed training time", ylab = "fitted values")
-abline(a = 0, b = 1)
-points(naiveBayes.df.mean$timetrain.test.mean, 
-  predict(step.glm.naiveBayes.test, newdata = naiveBayes.df.mean,type = "response"), col = "black")
-points(naiveBayes.df.mean$timetrain.test.mean,
-  predict(naiveBayes.gamboost.test, newdata = naiveBayes.df.gam.test, type = "response"), col = "blue")
-points(naiveBayes.df.mean$timetrain.test.mean,
-  predict(naiveBayes.rF, newdata = naiveBayes.df.mean2, type = "response"), col= "green")  
-
-plot(naiveBayes.df.mean$timepredict.test.mean, predict(naiveBayes.glmboost.pred,
-  type = "response", newdata = naiveBayes.df.mean), col = "red",
-  xlab = "observed training time", ylab = "fitted values")
-abline(a = 0, b = 1)
-points(naiveBayes.df.mean$timepredict.test.mean, 
-  predict(step.glm.naiveBayes.pred, newdata = naiveBayes.df.mean,type = "response"), col = "black")
-points(naiveBayes.df.mean$timepredict.test.mean,
-  predict(naiveBayes.gamboost.pred, newdata = naiveBayes.df.gam.test, type = "response"), col = "blue")
-points(naiveBayes.df.mean$timepredict.test.mean,
-  predict(naiveBayes.rF.pred, newdata = naiveBayes.df.mean3, type = "response"), col= "green")  
-
-
 # with ggplot
 df = data.frame(traintime = naiveBayes.df.mean$timetrain.test.mean,
   glmboost = as.numeric(predict(naiveBayes.glmboost.test, type = "response", newdata = naiveBayes.df.mean)),
