@@ -312,6 +312,7 @@ par(mar=c(5.1,4.1,4.1,10.1))
 plot(naiveBayes.glmboost.pred,
   ylim = range(coef(naiveBayes.glmboost.pred, which = 2:17)),
   main = "Analysis of prediction time on naive Bayes - \n adjusted y-scale")
+par(opar)
 
 # Estimated coefficients
 coefs.naiveBayes.glmboost.pred = data.frame(coef(naiveBayes.glmboost.pred, which = ""))
