@@ -41,7 +41,7 @@
 
 5. Foler `ServerResults`: 
    
-   contains some model results for the glmboost and gamboost model. Not all results could be loaded into the repository, since most results are bigger than 25 MB.
+   model results of classifier naiveBayes for the glmboost and gamboost model. The remaining results could not be loaded into the repository, since most results are bigger than 25 MB.
 
    contains the result of the search for the optimal number of boosting iterations (result of function `cvrisk())` for all models (`cvm<classifier's name>_<model name>_<pred for prediction or test for training>`)
 
@@ -95,6 +95,8 @@
 9. `gbmAnalysis.R`, `glmnetAnalysis.R`, `naiveBayesAnalysis.R`, `nnetAnalysis.R`, `rangerAnalysis.R`, `rpartAnalysis.R`
 
    If the regression model is big, results of the analysis need to be buffered. Otherwise, R crashes.
+   
+   Since each script sources the glmboost and gamboost results from folder `ServerResults`, only`naiveBayesAnalysis.R` can be run, since the model results for naiveBayes are uploaded. Running the other analysis files requires to run the scripts creating the corresponding glmboost and gamboost models in `AnalysisOnServer`.
    
    Each script contains the analysis of the regression models of the respective target classifier
    
